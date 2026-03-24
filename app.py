@@ -1,4 +1,6 @@
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
+
 import requests
 import time
 import hmac
@@ -6,13 +8,11 @@ import hashlib
 import os
 import json
 
+load_dotenv()
 app = Flask(__name__)
-
 API_KEY = os.getenv("API_KEY")
 API_SECRET = os.getenv("API_SECRET")
-
-BASE_URL = "https://api.delta.exchange"
-
+BASE_URL = "https://cdn-ind.testnet.deltaex.org"
 def generate_signature(secret, message):
     return hmac.new(secret.encode(), message.encode(), hashlib.sha256).hexdigest()
 
@@ -51,10 +51,14 @@ def webhook():
     signal = data.get("signal")
 
     if signal == "BUY":
-        return jsonify(place_order("buy"))
+        result = place_order("buy")
+        print("ORDER RESPONSE:", result)
+        return jsonify(result)
 
     elif signal == "SELL":
-        return jsonify(place_order("sell"))
+        result = place_order("sell")
+        print("ORDER RESPONSE:", result)
+        return jsonify(result)
 
     return jsonify({"status": "ignored"})
 
