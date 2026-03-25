@@ -2,3 +2,4 @@ readme.txt
 __pycache__/
 .env
 venv
+pyrightconfig.json
