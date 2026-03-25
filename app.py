@@ -396,13 +396,19 @@ def recover_state_on_startup():
 def webhook():
     global current_position
 
+    print(f"\n[WEBHOOK STRUCK] Incoming request from {request.remote_addr} with Content-Type: {request.content_type}")
+    print(f"[WEBHOOK RAW DATA] {request.data}")
+
     try:
         data = request.get_json(force=True, silent=True)
         if data is None:
             try:
                 data = json.loads(request.data.decode("utf-8"))
-            except Exception:
+            except Exception as e:
+                print(f"[WEBHOOK ERROR] Failed to parse JSON: {e}")
                 return jsonify({"error": "invalid JSON"}), 400
+                
+        print(f"[WEBHOOK PARSED DATA] {data}")
 
         # Webhook secret check
         if WEBHOOK_SECRET and data.get("secret") != WEBHOOK_SECRET:
