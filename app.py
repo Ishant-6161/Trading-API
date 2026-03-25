@@ -397,9 +397,12 @@ def webhook():
     global current_position
 
     try:
-        data = request.json
+        data = request.get_json(force=True, silent=True)
         if data is None:
-            return jsonify({"error": "no JSON"}), 400
+            try:
+                data = json.loads(request.data.decode("utf-8"))
+            except Exception:
+                return jsonify({"error": "invalid JSON"}), 400
 
         # Webhook secret check
         if WEBHOOK_SECRET and data.get("secret") != WEBHOOK_SECRET:
